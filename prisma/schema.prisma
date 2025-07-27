@@ -12,3 +12,10 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model TrackscargoDB {
+  test      String   @id
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("trackscargo_db")
+}

@@ -3,6 +3,7 @@ import cors from "cors";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 import { apiKeyAuth } from "./middleware/auth";
+import { prisma } from "./lib/prisma";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -41,8 +42,15 @@ app.get("/", (req, res) => {
 });
 
 // Protected API routes
-app.get("/api/v1/shipments", apiKeyAuth, (req, res) => {
-  res.json({ shipments: ["XX1234567890", "XX1234567891"] });
+app.get("/api/v1/shipments", apiKeyAuth, async (req, res) => {
+  try {
+    const records = await prisma.trackscargoDB.findMany();
+    const shipments = records.map((record) => record.test);
+    res.json({ shipments });
+  } catch (error) {
+    console.error("Database error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 app.listen(PORT, () => {

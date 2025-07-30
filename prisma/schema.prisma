@@ -19,3 +19,35 @@ model TrackscargoDB {
 
   @@map("trackscargo_db")
 }
+
+model Shipment {
+  id             String        @id @default(cuid())
+  trackingNumber String        @unique @map("tracking_number")
+  origin         String
+  destination    String
+  weight         Float
+  pieces         Int
+  currentStatus  String        @map("current_status")
+  company        String?
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
+  
+  travelEvents   TravelEvent[]
+
+  @@map("shipments")
+}
+
+model TravelEvent {
+  id          String   @id @default(cuid())
+  shipmentId  String   @map("shipment_id")
+  status      String
+  location    String
+  description String
+  timestamp   DateTime
+  eventType   String   @map("event_type")
+  createdAt   DateTime @default(now()) @map("created_at")
+  
+  shipment    Shipment @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+
+  @@map("travel_events")
+}

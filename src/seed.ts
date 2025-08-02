@@ -177,8 +177,39 @@ async function seed() {
     // Clear existing data
     await prisma.travelEvent.deleteMany();
     await prisma.shipment.deleteMany();
+    await prisma.user.deleteMany();
+    await prisma.organization.deleteMany();
 
     console.log("🗑️  Cleared existing data");
+
+    // Create a seed organization
+    const organization = await prisma.organization.create({
+      data: {
+        name: "Demo Logistics Company",
+        slug: "demo-logistics",
+        ownerUserId: "temp-owner-id", // We'll update this after creating the user
+        plan: "free"
+      }
+    });
+
+    // Create a seed user
+    const user = await prisma.user.create({
+      data: {
+        email: "demo@example.com",
+        passwordHash: "$2b$12$dummy.hash.for.demo.user.only", // Dummy hash
+        organizationId: organization.id,
+        role: "owner",
+        displayName: "Demo User"
+      }
+    });
+
+    // Update organization with the actual owner user ID
+    await prisma.organization.update({
+      where: { id: organization.id },
+      data: { ownerUserId: user.id }
+    });
+
+    console.log("✅ Created demo organization and user");
 
     // Seed shipments with travel events
     for (const shipmentData of mockShipments) {
@@ -187,8 +218,13 @@ async function seed() {
       const createdShipment = await prisma.shipment.create({
         data: {
           ...shipment,
+          organizationId: organization.id,
+          createdByUserId: user.id,
           travelEvents: {
-            create: travelEvents
+            create: travelEvents.map(event => ({
+              ...event,
+              createdByUserId: user.id
+            }))
           }
         },
         include: {

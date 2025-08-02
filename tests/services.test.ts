@@ -432,7 +432,7 @@ describe('Service Layer Unit Tests', () => {
         const shipment = await ShipmentService.getByTrackingNumber('TRACK_SVC001');
 
         expect(shipment).toBeTruthy();
-        expect(shipment!).toEqual({
+        expect(shipment).toEqual({
           id: expect.any(String),
           trackingNumber: 'TRACK_SVC001',
           origin: 'Track Start',
@@ -457,11 +457,13 @@ describe('Service Layer Unit Tests', () => {
           ])
         });
 
-        expect(shipment!.travelHistory).toHaveLength(2);
+        expect(shipment?.travelHistory).toHaveLength(2);
         
         // Verify events are sorted by timestamp (most recent first)
-        const timestamps = shipment!.travelHistory.map(e => new Date(e.timestamp).getTime());
-        expect(timestamps[0]).toBeGreaterThanOrEqual(timestamps[1]);
+        if (shipment?.travelHistory) {
+          const timestamps = shipment.travelHistory.map(e => new Date(e.timestamp).getTime());
+          expect(timestamps[0]).toBeGreaterThanOrEqual(timestamps[1]);
+        }
       });
 
       it('should return null for non-existent tracking number', async () => {
@@ -491,7 +493,7 @@ describe('Service Layer Unit Tests', () => {
         // Should find shipment from any organization
         const shipment = await ShipmentService.getByTrackingNumber('PUBLIC_SVC001');
         expect(shipment).toBeTruthy();
-        expect(shipment!.trackingNumber).toBe('PUBLIC_SVC001');
+        expect(shipment?.trackingNumber).toBe('PUBLIC_SVC001');
       });
     });
   });

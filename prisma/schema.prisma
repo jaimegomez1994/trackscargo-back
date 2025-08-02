@@ -20,34 +20,103 @@ model TrackscargoDB {
   @@map("trackscargo_db")
 }
 
+model Organization {
+  id                    String   @id @default(cuid())
+  name                  String
+  slug                  String   @unique
+  ownerUserId           String   @map("owner_user_id")
+  plan                  String   @default("free")
+  maxUsers              Int?     @map("max_users")
+  maxShipmentsPerMonth  Int?     @map("max_shipments_per_month")
+  billingStatus         String   @default("active") @map("billing_status")
+  subscriptionData      Json?    @map("subscription_data")
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+
+  users        User[]
+  shipments    Shipment[]
+  invitations  UserInvitation[]
+
+  @@map("organizations")
+}
+
+model User {
+  id                    String    @id @default(cuid())
+  email                 String    @unique
+  passwordHash          String?   @map("password_hash")
+  googleId              String?   @unique @map("google_id")
+  organizationId        String    @map("organization_id")
+  role                  String    @default("member")
+  displayName           String?   @map("display_name")
+  avatarUrl             String?   @map("avatar_url")
+  invitedByUserId       String?   @map("invited_by_user_id")
+  invitationAcceptedAt  DateTime? @map("invitation_accepted_at")
+  lastLoginAt           DateTime? @map("last_login_at")
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+
+  organization      Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  invitedBy         User?        @relation("UserInvitations", fields: [invitedByUserId], references: [id])
+  invitedUsers      User[]       @relation("UserInvitations")
+  createdShipments  Shipment[]   @relation("ShipmentCreator")
+  createdEvents     TravelEvent[] @relation("EventCreator")
+  sentInvitations   UserInvitation[] @relation("InvitationSender")
+
+  @@map("users")
+}
+
+model UserInvitation {
+  id              String    @id @default(cuid())
+  organizationId  String    @map("organization_id")
+  email           String
+  role            String    @default("member")
+  invitedByUserId String    @map("invited_by_user_id")
+  invitationToken String    @unique @map("invitation_token")
+  expiresAt       DateTime  @map("expires_at")
+  acceptedAt      DateTime? @map("accepted_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  invitedBy    User         @relation("InvitationSender", fields: [invitedByUserId], references: [id])
+
+  @@unique([organizationId, email])
+  @@map("user_invitations")
+}
+
 model Shipment {
   id             String        @id @default(cuid())
   trackingNumber String        @unique @map("tracking_number")
+  organizationId String        @map("organization_id")
   origin         String
   destination    String
   weight         Float
   pieces         Int
   currentStatus  String        @map("current_status")
   company        String?
+  createdByUserId String       @map("created_by_user_id")
   createdAt      DateTime      @default(now()) @map("created_at")
   updatedAt      DateTime      @updatedAt @map("updated_at")
   
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdBy      User         @relation("ShipmentCreator", fields: [createdByUserId], references: [id])
   travelEvents   TravelEvent[]
 
   @@map("shipments")
 }
 
 model TravelEvent {
-  id          String   @id @default(cuid())
-  shipmentId  String   @map("shipment_id")
-  status      String
-  location    String
-  description String
-  timestamp   DateTime
-  eventType   String   @map("event_type")
-  createdAt   DateTime @default(now()) @map("created_at")
+  id              String   @id @default(cuid())
+  shipmentId      String   @map("shipment_id")
+  status          String
+  location        String
+  description     String
+  timestamp       DateTime
+  eventType       String   @map("event_type")
+  createdByUserId String?  @map("created_by_user_id")
+  createdAt       DateTime @default(now()) @map("created_at")
   
-  shipment    Shipment @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+  shipment  Shipment @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+  createdBy User?    @relation("EventCreator", fields: [createdByUserId], references: [id])
 
   @@map("travel_events")
 }

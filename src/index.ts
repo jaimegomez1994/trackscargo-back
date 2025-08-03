@@ -131,7 +131,7 @@ app.post("/api/v1/shipments/legacy", apiKeyAuth,
 
 app.post("/api/v1/shipments/legacy/:id/events", apiKeyAuth,
   param("id").isString().withMessage("Invalid shipment ID"),
-  body("status").notEmpty().withMessage("Status is required"),
+  body("status").notEmpty().withMessage("Status is required."),
   body("location").notEmpty().withMessage("Location is required"),
   body("description").optional(),
   body("eventType").isIn(["picked-up", "in-transit", "delivered"]).withMessage("Invalid event type"),

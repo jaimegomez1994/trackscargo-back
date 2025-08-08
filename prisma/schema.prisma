@@ -115,8 +115,24 @@ model TravelEvent {
   createdByUserId String?  @map("created_by_user_id")
   createdAt       DateTime @default(now()) @map("created_at")
   
-  shipment  Shipment @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
-  createdBy User?    @relation("EventCreator", fields: [createdByUserId], references: [id])
+  shipment  Shipment    @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+  createdBy User?       @relation("EventCreator", fields: [createdByUserId], references: [id])
+  files     EventFile[]
 
   @@map("travel_events")
+}
+
+model EventFile {
+  id           String      @id @default(cuid())
+  eventId      String      @map("event_id")
+  filename     String      // Supabase storage path
+  originalName String      @map("original_name")
+  fileSize     Int         @map("file_size")
+  mimeType     String      @map("mime_type")
+  uploadedAt   DateTime    @default(now()) @map("uploaded_at")
+  uploadedBy   String?     @map("uploaded_by")
+  
+  event        TravelEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  
+  @@map("event_files")
 }

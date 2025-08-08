@@ -146,13 +146,6 @@ curl -X POST http://localhost:3001/api/v1/shipments/SHIPMENT_ID/events \
 curl http://localhost:3001/api/v1/track/SHIP001
 ```
 
-### 🔄 Legacy Endpoints (Backward Compatibility)
-
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| `GET` | `/api/v1/shipments/legacy` | Legacy shipment list | ✅ API Key |
-| `POST` | `/api/v1/shipments/legacy` | Legacy create (deprecated) | ✅ API Key |
-
 ## 🏢 Multi-Tenant Architecture
 
 ### Organization Isolation

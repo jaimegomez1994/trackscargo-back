@@ -216,7 +216,7 @@ describe('Service Layer Unit Tests', () => {
         });
 
         // Verify database state
-        const dbShipment = await prisma.shipment.findUnique({
+        const dbShipment = await prisma.shipment.findFirst({
           where: { trackingNumber: validShipmentData.trackingNumber }
         });
 

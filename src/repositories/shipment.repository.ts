@@ -4,7 +4,7 @@ import type { Shipment, TravelEvent } from '@prisma/client';
 export class ShipmentRepository {
   // Public method - no organization filter (for public tracking)
   static async findByTrackingNumber(trackingNumber: string): Promise<(Shipment & { travelEvents: TravelEvent[] }) | null> {
-    return await prisma.shipment.findUnique({
+    return await prisma.shipment.findFirst({
       where: { trackingNumber },
       include: {
         travelEvents: {
@@ -88,16 +88,27 @@ export class ShipmentRepository {
       currentStatus?: string;
       company?: string;
     }
-  ): Promise<Shipment | null> {
-    return await prisma.shipment.updateMany({
+  ): Promise<(Shipment & { travelEvents: TravelEvent[] }) | null> {
+    const result = await prisma.shipment.updateMany({
       where: { 
         id,
         organizationId 
       },
       data
-    }).then(result => 
-      result.count > 0 ? prisma.shipment.findUnique({ where: { id } }) : null
-    );
+    });
+    
+    if (result.count > 0) {
+      return await prisma.shipment.findUnique({ 
+        where: { id },
+        include: {
+          travelEvents: {
+            orderBy: { timestamp: 'desc' }
+          }
+        }
+      });
+    }
+    
+    return null;
   }
 
   static async addTravelEvent(

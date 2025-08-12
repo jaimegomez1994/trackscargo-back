@@ -59,7 +59,7 @@ describe('Shipments API', () => {
       });
 
       // Verify shipment was created in database
-      const shipment = await prisma.shipment.findUnique({
+      const shipment = await prisma.shipment.findFirst({
         where: { trackingNumber: validShipmentData.trackingNumber }
       });
       expect(shipment).toBeTruthy();

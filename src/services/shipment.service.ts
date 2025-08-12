@@ -1,4 +1,6 @@
 import { ShipmentRepository } from '../repositories/shipment.repository';
+import { OrganizationRepository } from '../repositories/organization.repository';
+import { generateTrackingNumber } from '../utils/trackingNumber';
 import type { 
   CreateShipmentDTO, 
   UpdateShipmentDTO, 
@@ -30,14 +32,26 @@ export class ShipmentService {
     organizationId: string, 
     createdByUserId: string
   ): Promise<ShipmentResponse> {
-    // Check if tracking number already exists
-    const existingShipment = await ShipmentRepository.findByTrackingNumber(data.trackingNumber);
+    // Get organization details to generate prefixed tracking number
+    const organization = await OrganizationRepository.findById(organizationId);
+    if (!organization) {
+      throw new Error('Organization not found');
+    }
+
+    // Generate the full tracking number with organization prefix
+    const fullTrackingNumber = generateTrackingNumber(organization.name, data.trackingNumber);
+
+    // Check if tracking number already exists within this organization
+    const existingShipment = await ShipmentRepository.findByTrackingNumberAndOrganization(
+      fullTrackingNumber, 
+      organizationId
+    );
     if (existingShipment) {
-      throw new Error('Tracking number already exists');
+      throw new Error('Tracking number already exists in your organization');
     }
 
     const shipment = await ShipmentRepository.create({
-      trackingNumber: data.trackingNumber,
+      trackingNumber: fullTrackingNumber,
       organizationId,
       origin: data.origin,
       destination: data.destination,

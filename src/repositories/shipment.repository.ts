@@ -15,6 +15,23 @@ export class ShipmentRepository {
   }
 
   // Organization-scoped methods
+  static async findByTrackingNumberAndOrganization(
+    trackingNumber: string, 
+    organizationId: string
+  ): Promise<(Shipment & { travelEvents: TravelEvent[] }) | null> {
+    return await prisma.shipment.findFirst({
+      where: { 
+        trackingNumber,
+        organizationId 
+      },
+      include: {
+        travelEvents: {
+          orderBy: { timestamp: 'desc' }
+        }
+      }
+    });
+  }
+
   static async findByOrganization(organizationId: string): Promise<(Shipment & { travelEvents: TravelEvent[] })[]> {
     return await prisma.shipment.findMany({
       where: { organizationId },

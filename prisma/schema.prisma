@@ -85,7 +85,7 @@ model UserInvitation {
 
 model Shipment {
   id             String        @id @default(cuid())
-  trackingNumber String        @unique @map("tracking_number")
+  trackingNumber String        @map("tracking_number")
   organizationId String        @map("organization_id")
   origin         String
   destination    String
@@ -101,6 +101,7 @@ model Shipment {
   createdBy      User         @relation("ShipmentCreator", fields: [createdByUserId], references: [id])
   travelEvents   TravelEvent[]
 
+  @@unique([organizationId, trackingNumber])
   @@map("shipments")
 }
 

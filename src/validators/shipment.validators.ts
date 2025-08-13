@@ -44,7 +44,30 @@ export const addTravelEventValidation = [
     .optional()
     .trim(),
   body('eventType')
-    .isIn(['picked-up', 'in-transit', 'delivered'])
+    .isIn(['picked-up', 'in-transit', 'delivered', 'exception', 'out-for-delivery', 'attempted-delivery', 'at-facility', 'customs-clearance', 'returned'])
+    .withMessage('Invalid event type')
+];
+
+export const updateTravelEventValidation = [
+  param('id')
+    .isString()
+    .withMessage('Invalid event ID'),
+  body('status')
+    .optional()
+    .notEmpty()
+    .withMessage('Status cannot be empty if provided')
+    .trim(),
+  body('location')
+    .optional()
+    .notEmpty()
+    .withMessage('Location cannot be empty if provided')
+    .trim(),
+  body('description')
+    .optional()
+    .trim(),
+  body('eventType')
+    .optional()
+    .isIn(['picked-up', 'in-transit', 'delivered', 'exception', 'out-for-delivery', 'attempted-delivery', 'at-facility', 'customs-clearance', 'returned'])
     .withMessage('Invalid event type')
 ];
 

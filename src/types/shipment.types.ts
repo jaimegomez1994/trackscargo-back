@@ -21,7 +21,14 @@ export interface CreateTravelEventDTO {
   status: string;
   location: string;
   description?: string;
-  eventType: 'picked-up' | 'in-transit' | 'delivered';
+  eventType: 'picked-up' | 'in-transit' | 'delivered' | 'exception' | 'out-for-delivery' | 'attempted-delivery' | 'at-facility' | 'customs-clearance' | 'returned';
+}
+
+export interface UpdateTravelEventDTO {
+  status?: string;
+  location?: string;
+  description?: string;
+  eventType?: 'picked-up' | 'in-transit' | 'delivered' | 'exception' | 'out-for-delivery' | 'attempted-delivery' | 'at-facility' | 'customs-clearance' | 'returned';
 }
 
 export interface ShipmentResponse {

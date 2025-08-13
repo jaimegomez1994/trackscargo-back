@@ -5,6 +5,7 @@ import type {
   CreateShipmentDTO, 
   UpdateShipmentDTO, 
   CreateTravelEventDTO, 
+  UpdateTravelEventDTO,
   ShipmentResponse, 
   TravelEventResponse 
 } from '../types/shipment.types';
@@ -123,6 +124,79 @@ export class ShipmentService {
       timestamp: travelEvent.timestamp.toISOString(),
       type: travelEvent.eventType
     };
+  }
+
+  static async updateTravelEvent(
+    eventId: string,
+    organizationId: string,
+    data: UpdateTravelEventDTO,
+    updatedByUserId: string
+  ): Promise<TravelEventResponse> {
+    // First, get the event and verify it belongs to the organization
+    const event = await ShipmentRepository.findTravelEventByIdAndOrganization(eventId, organizationId);
+    if (!event) {
+      throw new Error('Travel event not found');
+    }
+
+    // Update the event
+    const updatedEvent = await ShipmentRepository.updateTravelEvent(eventId, {
+      ...data,
+      updatedByUserId,
+      updatedAt: new Date()
+    });
+
+    // If status was updated, recalculate shipment status
+    if (data.status) {
+      await this.recalculateShipmentStatus(event.shipmentId);
+    }
+
+    return {
+      id: updatedEvent.id,
+      status: updatedEvent.status,
+      location: updatedEvent.location,
+      description: updatedEvent.description,
+      timestamp: updatedEvent.timestamp.toISOString(),
+      type: updatedEvent.eventType
+    };
+  }
+
+  static async deleteTravelEvent(
+    eventId: string,
+    organizationId: string,
+    deletedByUserId: string
+  ): Promise<void> {
+    // First, get the event and verify it belongs to the organization
+    const event = await ShipmentRepository.findTravelEventByIdAndOrganization(eventId, organizationId);
+    if (!event) {
+      throw new Error('Travel event not found');
+    }
+
+    const shipmentId = event.shipmentId;
+
+    // Delete the event
+    await ShipmentRepository.deleteTravelEvent(eventId);
+
+    // Recalculate shipment status after deletion
+    await this.recalculateShipmentStatus(shipmentId);
+  }
+
+  // Business logic for recalculating shipment status
+  private static async recalculateShipmentStatus(shipmentId: string): Promise<void> {
+    // Get all remaining events for this shipment, ordered by timestamp
+    const events = await ShipmentRepository.findTravelEventsByShipment(shipmentId);
+    
+    if (events.length === 0) {
+      // No events left, set to a default status
+      await ShipmentRepository.updateStatus(shipmentId, 'Created');
+      return;
+    }
+
+    // Sort events by timestamp (most recent first)
+    events.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+    
+    // Use the status of the most recent event
+    const latestEvent = events[0];
+    await ShipmentRepository.updateStatus(shipmentId, latestEvent.status);
   }
 
   private static formatShipmentResponse(shipment: any): ShipmentResponse {

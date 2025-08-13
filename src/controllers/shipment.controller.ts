@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import { ShipmentService } from '../services/shipment.service';
-import type { CreateShipmentDTO, CreateTravelEventDTO } from '../types/shipment.types';
+import type { CreateShipmentDTO, CreateTravelEventDTO, UpdateTravelEventDTO } from '../types/shipment.types';
 
 export class ShipmentController {
   // Public endpoint - no auth required (for public tracking)
@@ -106,6 +106,66 @@ export class ShipmentController {
       console.error('Add travel event error:', error);
       const message = error instanceof Error ? error.message : 'Internal server error';
       const statusCode = message.includes('not found') ? 404 : 500;
+      
+      res.status(statusCode).json({ error: message });
+    }
+  }
+
+  static async updateTravelEvent(req: Request, res: Response) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ 
+          error: 'Validation failed', 
+          details: errors.array() 
+        });
+      }
+
+      if (!req.user) {
+        return res.status(401).json({ error: 'Authentication required' });
+      }
+
+      const { id: eventId } = req.params;
+      const data: UpdateTravelEventDTO = req.body;
+      
+      const updatedEvent = await ShipmentService.updateTravelEvent(
+        eventId,
+        req.user.organizationId,
+        data,
+        req.user.userId
+      );
+      
+      res.json(updatedEvent);
+    } catch (error) {
+      console.error('Update travel event error:', error);
+      const message = error instanceof Error ? error.message : 'Internal server error';
+      const statusCode = message.includes('not found') ? 404 : 
+                        message.includes('Permission denied') ? 403 : 500;
+      
+      res.status(statusCode).json({ error: message });
+    }
+  }
+
+  static async deleteTravelEvent(req: Request, res: Response) {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ error: 'Authentication required' });
+      }
+
+      const { id: eventId } = req.params;
+      
+      await ShipmentService.deleteTravelEvent(
+        eventId,
+        req.user.organizationId,
+        req.user.userId
+      );
+      
+      res.status(204).send();
+    } catch (error) {
+      console.error('Delete travel event error:', error);
+      const message = error instanceof Error ? error.message : 'Internal server error';
+      const statusCode = message.includes('not found') ? 404 : 
+                        message.includes('Permission denied') ? 403 : 500;
       
       res.status(statusCode).json({ error: message });
     }

@@ -136,4 +136,54 @@ export class ShipmentRepository {
       data: { currentStatus: status }
     });
   }
+
+  // Travel event management methods
+  static async findTravelEventByIdAndOrganization(
+    eventId: string,
+    organizationId: string
+  ): Promise<(TravelEvent & { shipment: { organizationId: string } }) | null> {
+    return await prisma.travelEvent.findFirst({
+      where: {
+        id: eventId,
+        shipment: {
+          organizationId
+        }
+      },
+      include: {
+        shipment: {
+          select: { organizationId: true }
+        }
+      }
+    });
+  }
+
+  static async updateTravelEvent(
+    eventId: string,
+    data: {
+      status?: string;
+      location?: string;
+      description?: string;
+      eventType?: string;
+      updatedByUserId?: string;
+      updatedAt?: Date;
+    }
+  ): Promise<TravelEvent> {
+    return await prisma.travelEvent.update({
+      where: { id: eventId },
+      data
+    });
+  }
+
+  static async deleteTravelEvent(eventId: string): Promise<void> {
+    await prisma.travelEvent.delete({
+      where: { id: eventId }
+    });
+  }
+
+  static async findTravelEventsByShipment(shipmentId: string): Promise<TravelEvent[]> {
+    return await prisma.travelEvent.findMany({
+      where: { shipmentId },
+      orderBy: { timestamp: 'desc' }
+    });
+  }
 }

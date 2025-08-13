@@ -2,7 +2,7 @@ import { body, param } from 'express-validator';
 
 export const createShipmentValidation = [
   body('trackingNumber')
-    .isLength({ min: 3 })
+    .isLength({ min: 1 })
     .withMessage('Tracking number is required')
     .trim(),
   body('origin')
@@ -50,6 +50,6 @@ export const addTravelEventValidation = [
 
 export const trackingNumberValidation = [
   param('trackingNumber')
-    .isLength({ min: 3 })
-    .withMessage('Tracking number must be at least 3 characters')
+    .isLength({ min: 1 })
+    .withMessage('Tracking number is required')
 ];

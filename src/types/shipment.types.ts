@@ -28,6 +28,7 @@ export interface UpdateTravelEventDTO {
   status?: string;
   location?: string;
   description?: string;
+  timestamp?: string;
   eventType?: 'picked-up' | 'in-transit' | 'delivered' | 'exception' | 'out-for-delivery' | 'attempted-delivery' | 'at-facility' | 'customs-clearance' | 'returned';
 }
 

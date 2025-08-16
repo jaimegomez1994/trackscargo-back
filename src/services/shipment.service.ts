@@ -139,11 +139,7 @@ export class ShipmentService {
     }
 
     // Update the event
-    const updatedEvent = await ShipmentRepository.updateTravelEvent(eventId, {
-      ...data,
-      updatedByUserId,
-      updatedAt: new Date()
-    });
+    const updatedEvent = await ShipmentRepository.updateTravelEvent(eventId, data);
 
     // If status was updated, recalculate shipment status
     if (data.status) {

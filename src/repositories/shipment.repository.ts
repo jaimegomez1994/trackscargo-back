@@ -163,14 +163,19 @@ export class ShipmentRepository {
       status?: string;
       location?: string;
       description?: string;
+      timestamp?: string;
       eventType?: string;
-      updatedByUserId?: string;
-      updatedAt?: Date;
     }
   ): Promise<TravelEvent> {
+    // Convert timestamp string to Date object if provided
+    const updateData = {
+      ...data,
+      ...(data.timestamp && { timestamp: new Date(data.timestamp) })
+    };
+    
     return await prisma.travelEvent.update({
       where: { id: eventId },
-      data
+      data: updateData
     });
   }
 

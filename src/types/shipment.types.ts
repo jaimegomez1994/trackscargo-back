@@ -2,7 +2,7 @@ export interface CreateShipmentDTO {
   trackingNumber: string;
   origin: string;
   destination: string;
-  weight: number;
+  weight?: number;
   pieces: number;
   status: string;
   company?: string;

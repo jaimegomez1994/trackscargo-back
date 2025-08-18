@@ -6,6 +6,7 @@ import {
   createShipmentValidation, 
   addTravelEventValidation, 
   updateTravelEventValidation,
+  updateShipmentValidation,
   trackingNumberValidation 
 } from '../validators/shipment.validators';
 
@@ -17,6 +18,7 @@ router.get('/track/:trackingNumber', trackingNumberValidation, ShipmentControlle
 // New JWT-based authenticated routes
 router.get('/shipments', requireAuth, ShipmentController.getOrganizationShipments);
 router.post('/shipments', requireAuth, createShipmentValidation, ShipmentController.createShipment);
+router.put('/shipments/:id', requireAuth, updateShipmentValidation, ShipmentController.updateShipment);
 router.post('/shipments/:id/events', requireAuth, addTravelEventValidation, ShipmentController.addTravelEvent);
 
 // Event management routes

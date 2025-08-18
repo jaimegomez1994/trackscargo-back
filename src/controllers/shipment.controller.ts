@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import { ShipmentService } from '../services/shipment.service';
-import type { CreateShipmentDTO, CreateTravelEventDTO, UpdateTravelEventDTO } from '../types/shipment.types';
+import type { CreateShipmentDTO, CreateTravelEventDTO, UpdateTravelEventDTO, UpdateShipmentDTO } from '../types/shipment.types';
 
 export class ShipmentController {
   // Public endpoint - no auth required (for public tracking)
@@ -72,6 +72,43 @@ export class ShipmentController {
       console.error('Create shipment error:', error);
       const message = error instanceof Error ? error.message : 'Internal server error';
       const statusCode = message.includes('already exists') ? 400 : 500;
+      
+      res.status(statusCode).json({ error: message });
+    }
+  }
+
+  static async updateShipment(req: Request, res: Response) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ 
+          error: 'Validation failed', 
+          details: errors.array() 
+        });
+      }
+
+      if (!req.user) {
+        return res.status(401).json({ error: 'Authentication required' });
+      }
+
+      const { id: shipmentId } = req.params;
+      const data: UpdateShipmentDTO = req.body;
+      
+      const updatedShipment = await ShipmentService.updateShipment(
+        shipmentId,
+        req.user.organizationId,
+        data
+      );
+      
+      if (!updatedShipment) {
+        return res.status(404).json({ error: 'Shipment not found' });
+      }
+      
+      res.json(updatedShipment);
+    } catch (error) {
+      console.error('Update shipment error:', error);
+      const message = error instanceof Error ? error.message : 'Internal server error';
+      const statusCode = message.includes('not found') ? 404 : 500;
       
       res.status(statusCode).json({ error: message });
     }

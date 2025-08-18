@@ -71,6 +71,33 @@ export const updateTravelEventValidation = [
     .withMessage('Invalid event type')
 ];
 
+export const updateShipmentValidation = [
+  param('id')
+    .isString()
+    .withMessage('Invalid shipment ID'),
+  body('origin')
+    .optional()
+    .notEmpty()
+    .withMessage('Origin cannot be empty if provided')
+    .trim(),
+  body('destination')
+    .optional()
+    .notEmpty()
+    .withMessage('Destination cannot be empty if provided')
+    .trim(),
+  body('weight')
+    .optional()
+    .isNumeric()
+    .withMessage('Weight must be a number'),
+  body('pieces')
+    .optional()
+    .isInt({ min: 1 })
+    .withMessage('Pieces must be a positive integer'),
+  body('company')
+    .optional()
+    .trim()
+];
+
 export const trackingNumberValidation = [
   param('trackingNumber')
     .isLength({ min: 1 })

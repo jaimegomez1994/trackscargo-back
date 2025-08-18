@@ -56,7 +56,7 @@ export class ShipmentService {
       organizationId,
       origin: data.origin,
       destination: data.destination,
-      weight: data.weight,
+      weight: data.weight ?? 0, // Default to 0 if weight not provided
       pieces: data.pieces,
       currentStatus: data.status,
       company: data.company,

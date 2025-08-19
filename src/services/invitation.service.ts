@@ -152,6 +152,14 @@ export class InvitationService {
       throw new Error('User not found in this organization');
     }
 
+    // Clean up any invitation records for this user's email before deleting
+    await prisma.userInvitation.deleteMany({
+      where: { 
+        organizationId: organizationId,
+        email: userToRemove.email 
+      }
+    });
+
     // Note: This will cascade delete due to foreign key constraints
     // User's shipments and events will remain but user reference will be set to null
     await prisma.user.delete({

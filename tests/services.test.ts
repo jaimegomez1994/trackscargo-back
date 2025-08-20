@@ -100,7 +100,7 @@ describe('Service Layer Unit Tests', () => {
 
         await AuthService.createOrganization(createData);
 
-        const user = await prisma.user.findUnique({
+        const user = await prisma.user.findFirst({
           where: { email: createData.email }
         });
 
@@ -158,7 +158,7 @@ describe('Service Layer Unit Tests', () => {
           password: 'loginservicepass123'
         });
 
-        const user = await prisma.user.findUnique({
+        const user = await prisma.user.findFirst({
           where: { email: 'loginservice@corp.com' }
         });
 

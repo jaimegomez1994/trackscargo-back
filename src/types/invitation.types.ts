@@ -37,3 +37,13 @@ export interface UserListResponse {
   lastLoginAt?: string;
   isOwner: boolean;
 }
+
+export interface PendingInvitationResponse {
+  id: string;
+  email: string;
+  role: string;
+  invitedAt: string;
+  expiresAt: string;
+  invitedByName: string;
+  isExpired: boolean;
+}

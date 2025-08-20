@@ -42,7 +42,7 @@ model Organization {
 
 model User {
   id                    String    @id @default(cuid())
-  email                 String    @unique
+  email                 String
   passwordHash          String?   @map("password_hash")
   googleId              String?   @unique @map("google_id")
   organizationId        String    @map("organization_id")
@@ -62,6 +62,7 @@ model User {
   createdEvents     TravelEvent[] @relation("EventCreator")
   sentInvitations   UserInvitation[] @relation("InvitationSender")
 
+  @@unique([email, organizationId])
   @@map("users")
 }
 

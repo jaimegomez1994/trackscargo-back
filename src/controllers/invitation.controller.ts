@@ -71,6 +71,61 @@ export class InvitationController {
     }
   }
 
+  // GET /api/users/team-members
+  static async getOrganizationTeamMembers(req: Request, res: Response) {
+    try {
+      const { organizationId } = req.user!;
+      
+      const teamData = await InvitationService.getOrganizationTeamMembers(organizationId);
+      
+      res.json(teamData);
+    } catch (error) {
+      res.status(500).json({
+        error: error instanceof Error ? error.message : 'Failed to fetch team members'
+      });
+    }
+  }
+
+  // POST /api/invitations/:id/resend
+  static async resendInvitation(req: Request, res: Response) {
+    try {
+      const { organizationId, userId: requestingUserId } = req.user!;
+      const { id: invitationId } = req.params;
+
+      const result = await InvitationService.resendInvitation(
+        organizationId,
+        invitationId,
+        requestingUserId
+      );
+      
+      res.json(result);
+    } catch (error) {
+      res.status(400).json({
+        error: error instanceof Error ? error.message : 'Failed to resend invitation'
+      });
+    }
+  }
+
+  // DELETE /api/invitations/:id
+  static async cancelInvitation(req: Request, res: Response) {
+    try {
+      const { organizationId, userId: requestingUserId } = req.user!;
+      const { id: invitationId } = req.params;
+
+      const result = await InvitationService.cancelInvitation(
+        organizationId,
+        invitationId,
+        requestingUserId
+      );
+      
+      res.json(result);
+    } catch (error) {
+      res.status(400).json({
+        error: error instanceof Error ? error.message : 'Failed to cancel invitation'
+      });
+    }
+  }
+
   // DELETE /api/users/:id
   static async removeUser(req: Request, res: Response) {
     try {

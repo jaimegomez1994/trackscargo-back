@@ -3,7 +3,7 @@ import type { User, Organization } from '@prisma/client';
 
 export class UserRepository {
   static async findByEmail(email: string): Promise<(User & { organization: Organization }) | null> {
-    return await prisma.user.findUnique({
+    return await prisma.user.findFirst({
       where: { email },
       include: { organization: true }
     });
@@ -42,6 +42,15 @@ export class UserRepository {
     return await prisma.user.findMany({
       where: { organizationId },
       orderBy: { createdAt: 'asc' }
+    });
+  }
+
+  static async findByEmailAndOrganization(email: string, organizationId: string): Promise<User | null> {
+    return await prisma.user.findFirst({
+      where: { 
+        email,
+        organizationId 
+      }
     });
   }
 }

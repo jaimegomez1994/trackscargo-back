@@ -58,6 +58,21 @@ export class UserInvitationRepository {
     });
   }
 
+  static async findPendingByOrganization(organizationId: string): Promise<(UserInvitation & { 
+    invitedBy: User | null;
+  })[]> {
+    return await prisma.userInvitation.findMany({
+      where: {
+        organizationId,
+        acceptedAt: null, // Only pending (not accepted)
+      },
+      include: {
+        invitedBy: true,
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+  }
+
   static async markAsAccepted(id: string): Promise<UserInvitation> {
     return await prisma.userInvitation.update({
       where: { id },

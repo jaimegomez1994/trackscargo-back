@@ -1,6 +1,6 @@
 # 🚚 Trackscargo Backend API
 
-A modern, multi-tenant SaaS backend for shipment tracking and logistics management. Built with Node.js, Express, TypeScript, and PostgreSQL.
+A modern, multi-tenant SaaS backend for shipment tracking and logistics management. Built with Node.js, Express, TypeScript, and PostgreSQL. 
 
 ## 🏗️ Architecture
 

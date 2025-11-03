@@ -62,7 +62,54 @@ export class AuthController {
       console.error('Get user error:', error);
       const message = error instanceof Error ? error.message : 'Internal server error';
       const statusCode = message.includes('not found') ? 404 : 500;
-      
+
+      res.status(statusCode).json({ error: message });
+    }
+  }
+
+  static async forgotPassword(req: Request, res: Response) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          error: 'Validation failed',
+          details: errors.array()
+        });
+      }
+
+      const { email } = req.body;
+      const result = await AuthService.requestPasswordReset(email);
+
+      res.json(result);
+    } catch (error) {
+      console.error('Forgot password error:', error);
+      const message = error instanceof Error ? error.message : 'Internal server error';
+
+      res.status(500).json({ error: message });
+    }
+  }
+
+  static async resetPassword(req: Request, res: Response) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          error: 'Validation failed',
+          details: errors.array()
+        });
+      }
+
+      const { token } = req.params;
+      const { password } = req.body;
+
+      const result = await AuthService.resetPassword(token, password);
+
+      res.json(result);
+    } catch (error) {
+      console.error('Reset password error:', error);
+      const message = error instanceof Error ? error.message : 'Internal server error';
+      const statusCode = message.includes('Invalid') || message.includes('expired') ? 400 : 500;
+
       res.status(statusCode).json({ error: message });
     }
   }

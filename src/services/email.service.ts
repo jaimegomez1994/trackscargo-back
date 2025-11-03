@@ -276,10 +276,154 @@ You can now create shipments, track packages, and collaborate with your team mem
 
 Getting Started:
 - Create your first shipment
-- Add tracking events and updates  
+- Add tracking events and updates
 - Invite team members to collaborate
 
 Need help getting started? Reply to this email.
+
+© 2024 TracksCargo. All rights reserved.
+    `.trim();
+  }
+
+  /**
+   * Send password reset email
+   */
+  static async sendPasswordResetEmail(
+    to: string,
+    userName: string,
+    resetLink: string
+  ): Promise<EmailResponse> {
+    if (!this.isEnabled) {
+      console.log('Email sending is disabled');
+      return { success: false, error: 'Email sending is disabled' };
+    }
+
+    if (!process.env.RESEND_API_KEY) {
+      console.error('RESEND_API_KEY not configured');
+      return { success: false, error: 'Email service not configured' };
+    }
+
+    try {
+      const { data, error } = await this.resend.emails.send({
+        from: `${this.fromName} <${this.fromEmail}>`,
+        to: [to],
+        subject: 'Reset Your Password - TracksCargo',
+        html: this.getPasswordResetEmailTemplate(userName, resetLink),
+        text: this.getPasswordResetEmailText(userName, resetLink),
+      });
+
+      if (error) {
+        console.error('Resend error:', error);
+        return { success: false, error: error.message };
+      }
+
+      console.log('Password reset email sent successfully:', data?.id);
+      return { success: true, messageId: data?.id };
+    } catch (error) {
+      console.error('Failed to send password reset email:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      };
+    }
+  }
+
+  /**
+   * HTML template for password reset email
+   */
+  private static getPasswordResetEmailTemplate(userName: string, resetLink: string): string {
+    return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Reset Your Password</title>
+    </head>
+    <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f7f9fc;">
+        <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="background: white; border-radius: 8px; padding: 32px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <!-- Header -->
+                <div style="text-align: center; margin-bottom: 32px;">
+                    <h1 style="color: #2563eb; margin: 0; font-size: 28px; font-weight: 600;">TracksCargo</h1>
+                    <p style="color: #64748b; margin: 8px 0 0 0; font-size: 16px;">Shipment Tracking & Logistics</p>
+                </div>
+
+                <!-- Main Content -->
+                <h2 style="color: #1e293b; margin: 0 0 16px 0; font-size: 24px; font-weight: 600;">Reset Your Password</h2>
+
+                <p style="color: #475569; font-size: 16px; margin: 0 0 16px 0;">Hi ${userName}!</p>
+
+                <p style="color: #475569; font-size: 16px; margin: 0 0 16px 0;">
+                    We received a request to reset your password. Click the button below to create a new password:
+                </p>
+
+                <!-- CTA Button -->
+                <div style="text-align: center; margin: 32px 0;">
+                    <a href="${resetLink}"
+                       style="background-color: #2563eb; color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: 600; font-size: 16px; transition: background-color 0.2s;">
+                        Reset Password
+                    </a>
+                </div>
+
+                <!-- Alternative Link -->
+                <div style="background-color: #f8fafc; border-radius: 6px; padding: 16px; margin: 24px 0;">
+                    <p style="color: #64748b; font-size: 14px; margin: 0 0 8px 0;">
+                        <strong>Can't click the button?</strong> Copy and paste this link into your browser:
+                    </p>
+                    <p style="word-break: break-all; color: #2563eb; font-size: 14px; margin: 0;">
+                        <a href="${resetLink}" style="color: #2563eb;">${resetLink}</a>
+                    </p>
+                </div>
+
+                <!-- Security Notice -->
+                <div style="background-color: #fef2f2; border-left: 4px solid #ef4444; padding: 16px; margin: 24px 0;">
+                    <p style="color: #991b1b; font-size: 14px; margin: 0; font-weight: 600;">
+                        ⚠️ Security Notice
+                    </p>
+                    <p style="color: #7f1d1d; font-size: 14px; margin: 8px 0 0 0;">
+                        If you didn't request a password reset, please ignore this email or contact support if you have concerns.
+                    </p>
+                </div>
+
+                <!-- Expiration Notice -->
+                <p style="color: #ef4444; font-size: 14px; margin: 24px 0 0 0; text-align: center;">
+                    ⏰ This link expires in 1 hour
+                </p>
+            </div>
+
+            <!-- Footer -->
+            <div style="text-align: center; margin-top: 24px;">
+                <p style="color: #94a3b8; font-size: 12px; margin: 0;">
+                    Need help? Reply to this email or contact our support team.<br>
+                    © 2024 TracksCargo. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </body>
+    </html>
+    `;
+  }
+
+  /**
+   * Plain text version of password reset email
+   */
+  private static getPasswordResetEmailText(userName: string, resetLink: string): string {
+    return `
+Reset Your Password - TracksCargo
+
+Hi ${userName}!
+
+We received a request to reset your password. Click the link below to create a new password:
+
+${resetLink}
+
+This link expires in 1 hour.
+
+SECURITY NOTICE:
+If you didn't request a password reset, please ignore this email or contact support if you have concerns.
+
+Need help? Reply to this email or contact our support team.
 
 © 2024 TracksCargo. All rights reserved.
     `.trim();

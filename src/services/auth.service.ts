@@ -3,6 +3,8 @@ import { OrganizationRepository } from '../repositories/organization.repository'
 import { hashPassword, comparePassword } from '../lib/password';
 import { generateToken, JWTPayload } from '../lib/jwt';
 import { generateUniqueSlug } from '../lib/utils';
+import { EmailService } from './email.service';
+import crypto from 'crypto';
 import type { CreateOrganizationDTO, LoginDTO, AuthResponse, UserInfo, OrganizationInfo } from '../types/auth.types';
 
 export class AuthService {
@@ -133,5 +135,79 @@ export class AuthService {
   static async validateToken(payload: JWTPayload): Promise<boolean> {
     const user = await UserRepository.findById(payload.userId);
     return !!(user && user.organization.billingStatus === 'active');
+  }
+
+  /**
+   * Request password reset - generates token and sends email
+   */
+  static async requestPasswordReset(email: string): Promise<{ message: string }> {
+    // Find user by email
+    const user = await UserRepository.findByEmail(email);
+
+    // Always return success to prevent email enumeration
+    // If user doesn't exist, just return without sending email
+    if (!user || !user.passwordHash) {
+      console.log(`Password reset requested for non-existent/OAuth user: ${email}`);
+      return { message: 'If that email exists, we sent a password reset link' };
+    }
+
+    // Generate secure random token
+    const resetToken = crypto.randomBytes(32).toString('hex');
+
+    // Hash the token before storing (same concept as password hashing)
+    const hashedToken = crypto
+      .createHash('sha256')
+      .update(resetToken)
+      .digest('hex');
+
+    // Token expires in 1 hour
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
+
+    // Store hashed token and expiration in database
+    await UserRepository.setPasswordResetToken(user.id, hashedToken, expiresAt);
+
+    // Build reset link with the unhashed token
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const resetLink = `${frontendUrl}/reset-password/${resetToken}`;
+
+    // Send email
+    await EmailService.sendPasswordResetEmail(
+      user.email,
+      user.displayName || 'User',
+      resetLink
+    );
+
+    return { message: 'If that email exists, we sent a password reset link' };
+  }
+
+  /**
+   * Reset password using token
+   */
+  static async resetPassword(token: string, newPassword: string): Promise<{ message: string }> {
+    // Hash the provided token to match against database
+    const hashedToken = crypto
+      .createHash('sha256')
+      .update(token)
+      .digest('hex');
+
+    // Find user with this token that hasn't expired
+    const user = await UserRepository.findByResetToken(hashedToken);
+
+    if (!user || !user.resetPasswordExpires) {
+      throw new Error('Invalid or expired reset token');
+    }
+
+    // Check if token is expired
+    if (user.resetPasswordExpires < new Date()) {
+      throw new Error('Invalid or expired reset token');
+    }
+
+    // Hash the new password
+    const passwordHash = await hashPassword(newPassword);
+
+    // Update password and clear reset token
+    await UserRepository.resetPassword(user.id, passwordHash);
+
+    return { message: 'Password reset successfully' };
   }
 }

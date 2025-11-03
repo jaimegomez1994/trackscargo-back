@@ -52,6 +52,8 @@ model User {
   invitedByUserId       String?   @map("invited_by_user_id")
   invitationAcceptedAt  DateTime? @map("invitation_accepted_at")
   lastLoginAt           DateTime? @map("last_login_at")
+  resetPasswordToken    String?   @unique @map("reset_password_token")
+  resetPasswordExpires  DateTime? @map("reset_password_expires")
   createdAt             DateTime  @default(now()) @map("created_at")
   updatedAt             DateTime  @updatedAt @map("updated_at")
 

@@ -47,9 +47,36 @@ export class UserRepository {
 
   static async findByEmailAndOrganization(email: string, organizationId: string): Promise<User | null> {
     return await prisma.user.findFirst({
-      where: { 
+      where: {
         email,
-        organizationId 
+        organizationId
+      }
+    });
+  }
+
+  static async setPasswordResetToken(userId: string, token: string, expiresAt: Date): Promise<User> {
+    return await prisma.user.update({
+      where: { id: userId },
+      data: {
+        resetPasswordToken: token,
+        resetPasswordExpires: expiresAt
+      }
+    });
+  }
+
+  static async findByResetToken(token: string): Promise<User | null> {
+    return await prisma.user.findUnique({
+      where: { resetPasswordToken: token }
+    });
+  }
+
+  static async resetPassword(userId: string, passwordHash: string): Promise<User> {
+    return await prisma.user.update({
+      where: { id: userId },
+      data: {
+        passwordHash,
+        resetPasswordToken: null,
+        resetPasswordExpires: null
       }
     });
   }

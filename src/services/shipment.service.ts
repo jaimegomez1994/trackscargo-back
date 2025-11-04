@@ -60,6 +60,7 @@ export class ShipmentService {
       pieces: data.pieces,
       currentStatus: data.status,
       company: data.company,
+      gpsTrackingUrl: data.gpsTrackingUrl,
       createdByUserId
     });
 
@@ -205,6 +206,7 @@ export class ShipmentService {
       pieces: shipment.pieces,
       status: shipment.currentStatus,
       company: shipment.company,
+      gpsTrackingUrl: shipment.gpsTrackingUrl,
       travelHistory: shipment.travelEvents?.map((event: any) => ({
         id: event.id,
         status: event.status,

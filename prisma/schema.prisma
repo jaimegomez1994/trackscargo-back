@@ -96,10 +96,11 @@ model Shipment {
   pieces         Int
   currentStatus  String        @map("current_status")
   company        String?
+  gpsTrackingUrl String?       @map("gps_tracking_url")
   createdByUserId String       @map("created_by_user_id")
   createdAt      DateTime      @default(now()) @map("created_at")
   updatedAt      DateTime      @updatedAt @map("updated_at")
-  
+
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   createdBy      User         @relation("ShipmentCreator", fields: [createdByUserId], references: [id])
   travelEvents   TravelEvent[]

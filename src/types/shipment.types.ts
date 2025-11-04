@@ -6,6 +6,7 @@ export interface CreateShipmentDTO {
   pieces: number;
   status: string;
   company?: string;
+  gpsTrackingUrl?: string;
 }
 
 export interface UpdateShipmentDTO {
@@ -15,6 +16,7 @@ export interface UpdateShipmentDTO {
   pieces?: number;
   currentStatus?: string;
   company?: string;
+  gpsTrackingUrl?: string;
 }
 
 export interface CreateTravelEventDTO {
@@ -41,6 +43,7 @@ export interface ShipmentResponse {
   pieces: number;
   status: string;
   company?: string | null;
+  gpsTrackingUrl?: string | null;
   travelHistory?: TravelEventResponse[];
 }
 

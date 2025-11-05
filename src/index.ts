@@ -25,6 +25,7 @@ const limiter = rateLimit({
   message: { error: "Too many requests" },
   standardHeaders: true,
   legacyHeaders: false,
+  skip: (req) => req.method === 'OPTIONS', // Skip rate limiting for CORS preflight requests
 });
 
 app.use(limiter);

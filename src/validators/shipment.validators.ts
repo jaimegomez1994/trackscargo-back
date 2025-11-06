@@ -16,6 +16,10 @@ export const createShipmentValidation = [
   body('weight')
     .isNumeric()
     .withMessage('Weight must be a number'),
+  body('weightUnit')
+    .optional()
+    .isIn(['kg', 'lbs'])
+    .withMessage('Weight unit must be either kg or lbs'),
   body('pieces')
     .isInt({ min: 1 })
     .withMessage('Pieces must be a positive integer'),
@@ -89,6 +93,10 @@ export const updateShipmentValidation = [
     .optional()
     .isNumeric()
     .withMessage('Weight must be a number'),
+  body('weightUnit')
+    .optional()
+    .isIn(['kg', 'lbs'])
+    .withMessage('Weight unit must be either kg or lbs'),
   body('pieces')
     .optional()
     .isInt({ min: 1 })

@@ -3,6 +3,7 @@ export interface CreateShipmentDTO {
   origin: string;
   destination: string;
   weight?: number;
+  weightUnit?: string;
   pieces: number;
   status: string;
   company?: string;
@@ -13,6 +14,7 @@ export interface UpdateShipmentDTO {
   origin?: string;
   destination?: string;
   weight?: number;
+  weightUnit?: string;
   pieces?: number;
   currentStatus?: string;
   company?: string;
@@ -40,6 +42,7 @@ export interface ShipmentResponse {
   origin: string;
   destination: string;
   weight: number;
+  weightUnit: string;
   pieces: number;
   status: string;
   company?: string | null;

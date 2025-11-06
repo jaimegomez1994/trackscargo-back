@@ -67,6 +67,7 @@ export class ShipmentRepository {
     origin: string;
     destination: string;
     weight: number;
+    weightUnit: string;
     pieces: number;
     currentStatus: string;
     company?: string;
@@ -85,6 +86,7 @@ export class ShipmentRepository {
       origin?: string;
       destination?: string;
       weight?: number;
+      weightUnit?: string;
       pieces?: number;
       currentStatus?: string;
       company?: string;

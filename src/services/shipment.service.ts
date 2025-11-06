@@ -57,6 +57,7 @@ export class ShipmentService {
       origin: data.origin,
       destination: data.destination,
       weight: data.weight ?? 0, // Default to 0 if weight not provided
+      weightUnit: data.weightUnit ?? 'kg', // Default to 'kg' if weight unit not provided
       pieces: data.pieces,
       currentStatus: data.status,
       company: data.company,
@@ -203,6 +204,7 @@ export class ShipmentService {
       origin: shipment.origin,
       destination: shipment.destination,
       weight: shipment.weight,
+      weightUnit: shipment.weightUnit,
       pieces: shipment.pieces,
       status: shipment.currentStatus,
       company: shipment.company,

@@ -93,6 +93,7 @@ model Shipment {
   origin         String
   destination    String
   weight         Float
+  weightUnit     String        @default("kg") @map("weight_unit")
   pieces         Int
   currentStatus  String        @map("current_status")
   company        String?

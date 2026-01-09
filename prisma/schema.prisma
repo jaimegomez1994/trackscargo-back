@@ -98,6 +98,9 @@ model Shipment {
   currentStatus  String        @map("current_status")
   company        String?
   gpsTrackingUrl String?       @map("gps_tracking_url")
+  trailer        String?
+  pickupDate     DateTime?     @map("pickup_date")
+  deliveryDate   DateTime?     @map("delivery_date")
   createdByUserId String       @map("created_by_user_id")
   createdAt      DateTime      @default(now()) @map("created_at")
   updatedAt      DateTime      @updatedAt @map("updated_at")

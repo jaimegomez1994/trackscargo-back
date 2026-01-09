@@ -72,6 +72,9 @@ export class ShipmentRepository {
     currentStatus: string;
     company?: string;
     gpsTrackingUrl?: string;
+    trailer?: string;
+    pickupDate?: Date;
+    deliveryDate?: Date;
     createdByUserId: string;
   }): Promise<Shipment> {
     return await prisma.shipment.create({
@@ -91,6 +94,9 @@ export class ShipmentRepository {
       currentStatus?: string;
       company?: string;
       gpsTrackingUrl?: string;
+      trailer?: string;
+      pickupDate?: Date | null;
+      deliveryDate?: Date | null;
     }
   ): Promise<(Shipment & { travelEvents: TravelEvent[] }) | null> {
     const result = await prisma.shipment.updateMany({

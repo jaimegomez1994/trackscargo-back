@@ -8,6 +8,9 @@ export interface CreateShipmentDTO {
   status: string;
   company?: string;
   gpsTrackingUrl?: string;
+  trailer?: string;
+  pickupDate?: string;
+  deliveryDate?: string;
 }
 
 export interface UpdateShipmentDTO {
@@ -19,6 +22,9 @@ export interface UpdateShipmentDTO {
   currentStatus?: string;
   company?: string;
   gpsTrackingUrl?: string;
+  trailer?: string;
+  pickupDate?: string;
+  deliveryDate?: string;
 }
 
 export interface CreateTravelEventDTO {
@@ -47,6 +53,9 @@ export interface ShipmentResponse {
   status: string;
   company?: string | null;
   gpsTrackingUrl?: string | null;
+  trailer?: string | null;
+  pickupDate?: string | null;
+  deliveryDate?: string | null;
   travelHistory?: TravelEventResponse[];
 }
 

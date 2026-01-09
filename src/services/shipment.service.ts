@@ -62,6 +62,9 @@ export class ShipmentService {
       currentStatus: data.status,
       company: data.company,
       gpsTrackingUrl: data.gpsTrackingUrl,
+      trailer: data.trailer,
+      pickupDate: data.pickupDate ? new Date(data.pickupDate) : undefined,
+      deliveryDate: data.deliveryDate ? new Date(data.deliveryDate) : undefined,
       createdByUserId
     });
 
@@ -79,7 +82,14 @@ export class ShipmentService {
     organizationId: string,
     data: UpdateShipmentDTO
   ): Promise<ShipmentResponse | null> {
-    const updatedShipment = await ShipmentRepository.update(shipmentId, organizationId, data);
+    // Convert date strings to Date objects for repository
+    const repoData = {
+      ...data,
+      pickupDate: data.pickupDate ? new Date(data.pickupDate) : data.pickupDate === '' ? null : undefined,
+      deliveryDate: data.deliveryDate ? new Date(data.deliveryDate) : data.deliveryDate === '' ? null : undefined,
+    };
+
+    const updatedShipment = await ShipmentRepository.update(shipmentId, organizationId, repoData);
     
     if (!updatedShipment) {
       return null;
@@ -209,6 +219,9 @@ export class ShipmentService {
       status: shipment.currentStatus,
       company: shipment.company,
       gpsTrackingUrl: shipment.gpsTrackingUrl,
+      trailer: shipment.trailer,
+      pickupDate: shipment.pickupDate?.toISOString() || null,
+      deliveryDate: shipment.deliveryDate?.toISOString() || null,
       travelHistory: shipment.travelEvents?.map((event: any) => ({
         id: event.id,
         status: event.status,

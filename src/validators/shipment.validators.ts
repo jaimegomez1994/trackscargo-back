@@ -29,7 +29,18 @@ export const createShipmentValidation = [
     .trim(),
   body('company')
     .optional()
-    .trim()
+    .trim(),
+  body('trailer')
+    .optional()
+    .trim(),
+  body('pickupDate')
+    .optional()
+    .isISO8601()
+    .withMessage('Pickup date must be a valid date'),
+  body('deliveryDate')
+    .optional()
+    .isISO8601()
+    .withMessage('Delivery date must be a valid date')
 ];
 
 export const addTravelEventValidation = [
@@ -103,7 +114,18 @@ export const updateShipmentValidation = [
     .withMessage('Pieces must be a positive integer'),
   body('company')
     .optional()
-    .trim()
+    .trim(),
+  body('trailer')
+    .optional()
+    .trim(),
+  body('pickupDate')
+    .optional()
+    .isISO8601()
+    .withMessage('Pickup date must be a valid date'),
+  body('deliveryDate')
+    .optional()
+    .isISO8601()
+    .withMessage('Delivery date must be a valid date')
 ];
 
 export const trackingNumberValidation = [

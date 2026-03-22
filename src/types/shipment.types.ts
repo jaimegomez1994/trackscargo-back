@@ -8,6 +8,7 @@ export interface CreateShipmentDTO {
   status: string;
   company?: string;
   gpsTrackingUrl?: string;
+  gpsTrackingId?: string;
   trailer?: string;
   pickupDate?: string;
   deliveryDate?: string;
@@ -22,6 +23,7 @@ export interface UpdateShipmentDTO {
   currentStatus?: string;
   company?: string;
   gpsTrackingUrl?: string;
+  gpsTrackingId?: string;
   trailer?: string;
   pickupDate?: string;
   deliveryDate?: string;
@@ -53,6 +55,7 @@ export interface ShipmentResponse {
   status: string;
   company?: string | null;
   gpsTrackingUrl?: string | null;
+  gpsTrackingId?: string | null;
   trailer?: string | null;
   pickupDate?: string | null;
   deliveryDate?: string | null;

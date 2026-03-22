@@ -72,6 +72,7 @@ export class ShipmentRepository {
     currentStatus: string;
     company?: string;
     gpsTrackingUrl?: string;
+    gpsTrackingId?: string;
     trailer?: string;
     pickupDate?: Date;
     deliveryDate?: Date;
@@ -94,6 +95,7 @@ export class ShipmentRepository {
       currentStatus?: string;
       company?: string;
       gpsTrackingUrl?: string;
+      gpsTrackingId?: string;
       trailer?: string;
       pickupDate?: Date | null;
       deliveryDate?: Date | null;
